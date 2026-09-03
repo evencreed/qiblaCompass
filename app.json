@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "mobil-uygulama",
+    "name": "Qibla Compass",
     "slug": "mobil-uygulama",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobiluygulama",
+    "scheme": "qiblacompass",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -26,17 +26,38 @@
     "plugins": [
       "expo-router",
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Your location is used to calculate the Qibla direction and prayer times where you are. It never leaves your device."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "userTrackingUsageDescription": "Allowing tracking lets us show ads relevant to your interests. The app works exactly the same if you decline; ads are simply not personalised."
+        }
+      ],
+      "expo-localization"
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
+    },
+    "extra": {
+      "_comment": "RevenueCat public API keys and production ad units. Left empty, the subscription flow stays disabled and ads fall back to Google test units.",
+      "revenueCatIos": "",
+      "revenueCatAndroid": "",
+      "bannerAdUnitIos": "",
+      "bannerAdUnitAndroid": ""
     }
   }
 }
