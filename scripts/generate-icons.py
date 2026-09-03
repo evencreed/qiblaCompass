@@ -25,7 +25,9 @@ GOLD_TIP = (233, 190, 112, 255)  # okun ucunda hafif açılma
 STEEL = (94, 110, 118, 255)      # iğnenin karşı ucu
 TICK_MAJOR = (196, 208, 214, 255)
 TICK_MINOR = (110, 126, 134, 255)
-RING = (212, 162, 76, 90)
+# Halka: şeffaflık düşük tutuluyor. Daha saydam bir altın, açılış ekranının
+# büyük ölçeğinde donuk bir kahverengiye dönüşüyordu.
+RING = (212, 162, 76, 190)
 
 # İğnenin dikeyden sapması. Tam yukarı "kuzey" gibi okunurdu; hafif eğim
 # bunun bir yön (bearing) olduğunu anlatıyor.
