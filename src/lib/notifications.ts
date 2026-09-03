@@ -2,9 +2,8 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { t, type TranslationKey } from '@/lib/i18n';
+import { SOUND_OPTIONS, soundOption, type SoundId } from '@/lib/notification-sounds';
 import { formatTime, getSchedule, type Method, type PrayerKey } from '@/lib/prayer-times';
-
-const ANDROID_CHANNEL_ID = 'prayer-times';
 
 /**
  * Kaç günlük vakit önceden planlanır. iOS aynı anda en fazla 64 bekleyen
@@ -21,17 +20,23 @@ export type NotificationSettings = {
   prayers: Record<PrayerKey, boolean>;
   /** Vakitten kaç dakika önce hatırlatılacağı. 0 = tam vaktinde. */
   minutesBefore: number;
+  sound: SoundId;
 };
 
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   enabled: false,
   prayers: { fajr: true, sunrise: false, dhuhr: true, asr: true, maghrib: true, isha: true },
   minutesBefore: 0,
+  sound: 'default',
 };
 
 /**
- * Bildirim davranışını ve Android kanalını hazırlar. Android 8+ kanalsız
+ * Bildirim davranışını ve Android kanallarını hazırlar. Android 8+ kanalsız
  * bildirimi hiç göstermez, bu yüzden planlamadan önce çağrılmalı.
+ *
+ * Her ses seçeneği için ayrı bir kanal açılıyor: Android bir kanalın sesini
+ * oluşturulduktan sonra değiştirmeye izin vermiyor, dolayısıyla ses değişimi
+ * ancak kanal değiştirerek yapılabiliyor.
  */
 export async function configureNotifications(): Promise<void> {
   Notifications.setNotificationHandler({
@@ -44,11 +49,14 @@ export async function configureNotifications(): Promise<void> {
   });
 
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-      name: t('notifications.channelName'),
-      importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-    });
+    for (const option of SOUND_OPTIONS) {
+      await Notifications.setNotificationChannelAsync(option.channelId, {
+        name: `${t('notifications.channelName')} — ${t(option.labelKey)}`,
+        importance: Notifications.AndroidImportance.HIGH,
+        vibrationPattern: option.id === 'silent' ? undefined : [0, 250, 250, 250],
+        sound: option.channelSound,
+      });
+    }
   }
 }
 
@@ -92,6 +100,7 @@ export async function syncPrayerNotifications(
   if (!settings.enabled) return 0;
 
   const offsetMs = settings.minutesBefore * 60000;
+  const sound = soundOption(settings.sound);
   let scheduled = 0;
 
   for (let day = 0; day < DAYS_AHEAD; day++) {
@@ -119,7 +128,8 @@ export async function syncPrayerNotifications(
                   time: at,
                   minutes: settings.minutesBefore,
                 }),
-          ...(Platform.OS === 'android' ? { channelId: ANDROID_CHANNEL_ID } : {}),
+          sound: sound.contentSound,
+          ...(Platform.OS === 'android' ? { channelId: sound.channelId } : {}),
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -135,4 +145,22 @@ export async function syncPrayerNotifications(
 
 export async function cancelAllPrayerNotifications(): Promise<void> {
   await Notifications.cancelAllScheduledNotificationsAsync();
+}
+
+/**
+ * Seçilen sesi hemen çalar. Kullanıcının sesi duymadan seçim yapmasını
+ * önlüyor; özellikle paketlenmiş seslerde önemli çünkü Expo Go'da sessiz
+ * kalacaklar ve bu ancak denenince fark ediliyor.
+ */
+export async function previewSound(id: SoundId): Promise<void> {
+  const sound = soundOption(id);
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: t('notifications.previewTitle'),
+      body: t(sound.labelKey),
+      sound: sound.contentSound,
+      ...(Platform.OS === 'android' ? { channelId: sound.channelId } : {}),
+    },
+    trigger: null,
+  });
 }

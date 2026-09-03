@@ -74,6 +74,14 @@ const en = {
     'Notifications are turned off for this app. Enable them in your device settings to get reminders.',
   'notifications.openSettings': 'Open settings',
   'notifications.scheduled': '{count} reminders scheduled for the week ahead.',
+  'notifications.sound': 'Sound',
+  'notifications.previewTitle': 'Sound preview',
+  'notifications.soundNeedsBuild':
+    'This sound ships with the app, so it stays silent in Expo Go. It plays in a development or store build.',
+
+  'sound.default': 'System default',
+  'sound.chime': 'Chime',
+  'sound.silent': 'Silent',
 
   'prayer.fajr': 'Fajr',
   'prayer.sunrise': 'Sunrise',
@@ -220,6 +228,14 @@ const tr: Record<TranslationKey, string> = {
     'Bu uygulama için bildirimler kapalı. Hatırlatma alabilmek için cihaz ayarlarından açın.',
   'notifications.openSettings': 'Ayarları aç',
   'notifications.scheduled': 'Önümüzdeki hafta için {count} hatırlatma kuruldu.',
+  'notifications.sound': 'Ses',
+  'notifications.previewTitle': 'Ses denemesi',
+  'notifications.soundNeedsBuild':
+    'Bu ses uygulamayla birlikte paketleniyor, bu yüzden Expo Go’da sessiz kalır. Development veya mağaza derlemesinde çalar.',
+
+  'sound.default': 'Sistem sesi',
+  'sound.chime': 'Çan',
+  'sound.silent': 'Sessiz',
 
   'prayer.fajr': 'İmsak',
   'prayer.sunrise': 'Güneş',

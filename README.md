@@ -108,6 +108,28 @@ Planlama [`notifications.ts`](src/lib/notifications.ts) içinde ve iki kısıtı
 
 Güneş bir namaz vakti olmadığı için hatırlatma listesinde yer almaz.
 
+### Bildirim sesi
+
+Üç seçenek var: sistem sesi, uygulamanın kendi çan sesi, ve sessiz. Seçim
+yapıldığı anda ses bir kez çalınıyor — kullanıcının duymadan seçmesini önlemek
+için.
+
+Android'de bu, göründüğünden karmaşık: **Android 8+ sesi bildirime değil kanala
+bağlar ve bir kanalın sesi oluşturulduktan sonra değiştirilemez.** Bu yüzden
+[`notification-sounds.ts`](src/lib/notification-sounds.ts) her ses için ayrı bir
+kanal tanımlıyor ve planlama sırasında kanal değiştiriliyor. iOS'ta ses doğrudan
+bildirim içeriğine yazılıyor.
+
+Çan sesi [`scripts/generate-sounds.py`](scripts/generate-sounds.py) ile üretiliyor —
+birkaç harmoniğin üstel sönümü. Paketlenmiş bir varlık olduğu için **Expo Go'da
+sessiz kalır**, development veya mağaza derlemesinde çalar; arayüz bunu kullanıcıya
+açıkça söylüyor.
+
+Ezan kaydı eklemek isterseniz: telif açısından uygun bir `.wav` dosyasını
+`assets/sounds/` altına koyun, `app.json`'daki `expo-notifications` eklentisinin
+`sounds` dizisine ekleyin ve `SOUND_OPTIONS`'a bir giriş yazın. Ezan sesi bilinçli
+olarak üretilmedi; doğru kayıt seçimi ve lisansı içerik kararıdır.
+
 Kıble açısı ve namaz vakitleri [adhan](https://github.com/batoulapps/adhan-js) ile
 hesaplanır; internet gerekmez.
 
@@ -171,6 +193,8 @@ durumunu ürün kimliklerine değil bu hakka bakarak belirliyor.
 | `src/lib/premium-context.tsx` | RevenueCat abonelik durumu |
 | `src/lib/ads.ts` · `native-modules.ts` | Reklam SDK'sı ve ortam algılama |
 | `src/lib/notifications.ts` | Vakit hatırlatmalarının planlanması |
+| `src/lib/notification-sounds.ts` | Bildirim sesi seçenekleri ve Android kanalları |
+| `scripts/generate-icons.py` · `generate-sounds.py` | İkon ve zil sesi üreticileri |
 | `src/hooks/use-heading.ts` | Pusula aboneliği ve yumuşatma |
 | `src/hooks/use-tilt.ts` | Cihaz eğimi ölçümü |
 | `src/components/compass-dial.tsx` | SVG pusula kadranı |

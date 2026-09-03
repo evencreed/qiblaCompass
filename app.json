@@ -40,6 +40,12 @@
         }
       ],
       [
+        "expo-notifications",
+        {
+          "sounds": ["./assets/sounds/chime.wav"]
+        }
+      ],
+      [
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-3940256099942544~3347511713",

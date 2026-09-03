@@ -12,10 +12,12 @@ import {
 import { AppState } from 'react-native';
 
 import { useLocationState } from '@/lib/location-context';
+import type { SoundId } from '@/lib/notification-sounds';
 import {
   configureNotifications,
   DEFAULT_NOTIFICATION_SETTINGS,
   hasNotificationPermission,
+  previewSound,
   requestNotificationPermission,
   syncPrayerNotifications,
   type NotificationSettings,
@@ -33,6 +35,8 @@ type NotificationState = {
   setEnabled: (enabled: boolean) => void;
   togglePrayer: (key: PrayerKey) => void;
   setMinutesBefore: (minutes: number) => void;
+  /** Sesi seçer ve hemen bir kez çalar, böylece duymadan seçilmiş olmaz. */
+  setSound: (sound: SoundId) => void;
 };
 
 const NotificationContext = createContext<NotificationState | null>(null);
@@ -133,6 +137,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setSettings((previous) => ({ ...previous, minutesBefore: minutes }));
   }, []);
 
+  const setSound = useCallback((sound: SoundId) => {
+    setSettings((previous) => ({ ...previous, sound }));
+    previewSound(sound).catch(() => {
+      // Ön izleme başarısız olsa da seçim geçerli kalmalı.
+    });
+  }, []);
+
   const value = useMemo<NotificationState>(
     () => ({
       settings,
@@ -141,8 +152,17 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setEnabled,
       togglePrayer,
       setMinutesBefore,
+      setSound,
     }),
-    [settings, permissionDenied, scheduledCount, setEnabled, togglePrayer, setMinutesBefore],
+    [
+      settings,
+      permissionDenied,
+      scheduledCount,
+      setEnabled,
+      togglePrayer,
+      setMinutesBefore,
+      setSound,
+    ],
   );
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
